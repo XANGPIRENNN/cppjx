@@ -95,15 +95,6 @@
 
   /* ===== Content ===== */
   .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-  .content-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 20px; border-bottom: 1px solid var(--border);
-    background: var(--bg); flex-shrink: 0;
-  }
-  .content-bar-title {
-    font-size: 13px; font-weight: 500; color: var(--text);
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
   .preview-wrap {
     flex: 1; overflow-y: auto; padding: 28px 36px; background: var(--bg);
   }
@@ -161,7 +152,6 @@
         <line x1="3" y1="4" x2="13" y2="4"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="12" x2="13" y2="12"/>
       </svg>
     </button>
-    <span class="header-title">Markdown 查看器</span>
     <span class="header-path" id="headerPath"></span>
   </div>
 </header>
@@ -176,9 +166,6 @@
   </aside>
 
   <main class="content">
-    <div class="content-bar">
-      <span class="content-bar-title" id="contentTitle">Markdown 查看器</span>
-    </div>
     <div class="preview-wrap" id="preview">
       <div class="preview-empty">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -203,7 +190,6 @@
   const sidebarList = document.getElementById('sidebarList');
   const fileCount = document.getElementById('fileCount');
   const preview = document.getElementById('preview');
-  const contentTitle = document.getElementById('contentTitle');
   const headerPath = document.getElementById('headerPath');
   const toastEl = document.getElementById('toast');
 
@@ -234,7 +220,6 @@
     if (!files || files.length === 0) {
       fileCount.textContent = '0';
       headerPath.textContent = '';
-      contentTitle.textContent = 'Markdown 查看器';
       preview.innerHTML =
         '<div class="preview-empty">' +
         '<div class="sidebar-404">' +
@@ -316,7 +301,6 @@
     document.querySelectorAll('.sidebar-item').forEach((el, i) => {
       el.classList.toggle('active', i === index);
     });
-    contentTitle.textContent = entry.title + '.md';
     fetch(entry.fullName)
       .then(res => {
         if (!res.ok) throw new Error('HTTP ' + res.status);
