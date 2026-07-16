@@ -39,7 +39,6 @@
   }
   .sidebar-toggle:hover { background: var(--bg-secondary); border-color: #ccc; }
   .sidebar-toggle svg { display: block; }
-  .header-title { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; }
   .header-path {
     font-size: 12px; color: var(--text-muted); overflow: hidden;
     text-overflow: ellipsis; white-space: nowrap;
@@ -73,14 +72,13 @@
   .sidebar-list::-webkit-scrollbar { width: 4px; }
   .sidebar-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
   .sidebar-item {
-    display: block; width: 100%; text-align: left;
-    padding: 7px 16px 7px 20px; font-size: 13px; color: var(--text-secondary);
-    background: none; border: none; cursor: pointer; transition: all 0.1s;
-    font-family: var(--font-sans); line-height: 1.4;
-    border-left: 3px solid transparent;
+    display: block; width: calc(100% - 8px); text-align: left; margin: 2px 4px;
+    padding: 7px 14px; font-size: 13px; color: var(--text-secondary);
+    background: none; border: none; cursor: pointer; transition: all 0.12s;
+    font-family: var(--font-sans); line-height: 1.4; border-radius: 8px;
   }
   .sidebar-item:hover { background: var(--bg-tertiary); color: var(--text); }
-  .sidebar-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; border-left-color: var(--accent); }
+  .sidebar-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
   .sidebar-empty { padding: 32px 16px; text-align: center; color: var(--text-muted); font-size: 13px; line-height: 1.8; }
   .sidebar-404 {
     padding: 32px 16px; text-align: center;
@@ -152,7 +150,6 @@
         <line x1="3" y1="4" x2="13" y2="4"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="12" x2="13" y2="12"/>
       </svg>
     </button>
-    <span class="header-path" id="headerPath"></span>
   </div>
 </header>
 
@@ -163,6 +160,11 @@
       <span class="sidebar-count" id="fileCount">0</span>
     </div>
     <div class="sidebar-list" id="sidebarList"></div>
+    <div class="sidebar-footer" id="sidebarFooter">
+      <button class="sidebar-footer-btn" id="addDocBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
   </aside>
 
   <main class="content">
@@ -173,13 +175,60 @@
           <polyline points="14 2 14 8 20 8"/>
           <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
         </svg>
-        <span>正在加载文档列表...</span>
+        <span>选择文档查看</span>
       </div>
     </div>
   </main>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ===== 文档数据：手动添加，或由 GitHub Actions 自动注入 ===== -->
+<script class="doc-data" data-order="1" data-title="你好,C++" data-file="1. 你好,C++.md">
+## 你好,C++
+课程开始前我们要准备这些工具
+- [DevC++](https://www.ilanzou.com/s/5lDW774Z)
+- 手
+- 脑子
+- 电脑
+
+其实就这些,现在开始我们的课程吧
+
+> C++ 是一种高级语言，它是由 Bjarne Stroustrup 于 1979 年在贝尔实验室开始设计开发的。C++ 进一步扩充和完善了 C 语言，是一种面向对象的程序设计语言。C++ 可运行于多种平台上，如 Windows、MAC 操作系统以及 UNIX 的各种版本。
+
+这是C++的代码框架 背下来就对了,不写就没法运行
+``` cpp
+#include <iostream>
+using namespace std;
+int main() {
+    // 这里面写你的代码
+    return 0;
+}
+```
+看完了代码框架, 我们来学习第一个语法——cout语句
+### cout语句的使用方法
+先来看最基础的输出——字符串输出
+示例：输出Hello World！
+``` cpp
+cout << "Hello World!";
+```
+没错就这么简单
+只需要写上两个小于号里面加上双引号就可实现字符串输出
+现在来看下一个类型的cout——字符
+``` cpp
+cout << 'a';
+```
+这里你可能会问：字符是什么
+字符类型用于存储 ASCII 字符，通常占用 1 个字节。
+现在来看最后一种输出 输出一个数值
+``` cpp
+cout << 1 + 1; // 可以写一个算式
+cout << 5; // 也可以是直接的一个数字 包括小数 负数
+cout << ((2 + 3) * 678) / 3; // 复杂的算式也可以
+```
+学会了cout 请完成一下题目
+[第一课 课后题](https://oj.turingedu.cn/problem/2)
+</script>
 
 <script>
 (function() {
@@ -190,7 +239,6 @@
   const sidebarList = document.getElementById('sidebarList');
   const fileCount = document.getElementById('fileCount');
   const preview = document.getElementById('preview');
-  const headerPath = document.getElementById('headerPath');
   const toastEl = document.getElementById('toast');
 
   let toastTimer = null;
@@ -208,145 +256,78 @@
     toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2500);
   }
 
-  function parseFileName(name) {
-    const match = name.match(/^(\d+)\s*[.、．]\s*(.+)\.md$/i);
-    if (match) return { order: parseInt(match[1], 10), title: match[2].trim() };
-    const base = name.replace(/\.md$/i, '');
-    return { order: Infinity, title: base };
-  }
-
-  function renderSidebar(files) {
+  // ===== Render sidebar =====
+  function renderSidebar(docs) {
     sidebarList.innerHTML = '';
-    if (!files || files.length === 0) {
+    if (!docs || docs.length === 0) {
       fileCount.textContent = '0';
-      headerPath.textContent = '';
-      preview.innerHTML =
-        '<div class="preview-empty">' +
-        '<div class="sidebar-404">' +
-        '<div class="sidebar-404-code">404</div>' +
-        '<div class="sidebar-404-msg">当前目录下没有 Markdown 文件</div>' +
-        '</div></div>';
-      sidebarList.innerHTML =
-        '<div class="sidebar-404">' +
-        '<div class="sidebar-404-code">404</div>' +
-        '<div class="sidebar-404-msg">未找到 Markdown 文件</div>' +
-        '</div>';
+      sidebarList.innerHTML = '<div class="sidebar-404"><div class="sidebar-404-code">404</div><div class="sidebar-404-msg">未找到 Markdown 文件</div></div>';
+      preview.innerHTML = '<div class="preview-empty"><div style="font-size:48px;font-weight:700;color:#e0e0e0;line-height:1">404</div><span>当前目录下没有 Markdown 文件</span></div>';
       return;
     }
-
-    fileCount.textContent = files.length;
-    files.forEach((entry, index) => {
+    fileCount.textContent = docs.length;
+    docs.forEach((doc, i) => {
       const btn = document.createElement('button');
       btn.className = 'sidebar-item';
-      btn.textContent = entry.title;
-      btn.dataset.index = index;
-      btn.addEventListener('click', () => loadFile(entry, index));
+      btn.textContent = doc.title;
+      btn.addEventListener('click', () => showDoc(docs, i));
       sidebarList.appendChild(btn);
     });
-
-    if (files.length > 0) loadFile(files[0], 0);
+    showDoc(docs, 0);
   }
 
-  // ===== 核心修复：过滤裸 CSS =====
-  function stripBareCSS(text) {
-    // 去掉 /* ... */ 注释
-    text = text.replace(/\/\*[\s\S]*?\*\//g, '');
-    // 去掉 .class { ... } 裸CSS块（不包含在 ```css 中的）
-    text = text.replace(/\n*[.\w#\-]+\s*\{[\s\S]*?\}\s*/g, '');
-    return text;
+  // ===== Show doc (no fetch!) =====
+  function showDoc(docs, index) {
+    const doc = docs[index];
+    if (!doc) return;
+    document.querySelectorAll('.sidebar-item').forEach((el, i) => el.classList.toggle('active', i === index));
+    renderMarkdown(doc.content);
+    preview.scrollTop = 0;
   }
 
+  // ===== Render Markdown =====
   function renderMarkdown(text) {
     if (!text || !text.trim()) {
       preview.innerHTML = '<div class="preview-empty"><span>文件内容为空</span></div>';
       return;
     }
     try {
-      // 先过滤裸 CSS
-      let clean = stripBareCSS(text);
-
-      if (typeof marked !== 'undefined') {
-        marked.setOptions({
-          gfm: true,
-          breaks: true,
-          highlight: function(code, lang) {
-            if (lang && hljs && hljs.getLanguage(lang)) {
-              try {
-                return hljs.highlight(code, { language: lang }).value;
-              } catch (e) {
-                return code;
-              }
-            }
-            return code;
-          }
-        });
-        const html = marked.parse(clean);
-        preview.innerHTML = html;
-        if (typeof hljs !== 'undefined') {
-          preview.querySelectorAll('pre code').forEach(block => {
-            try {
-              hljs.highlightElement(block);
-            } catch (e) {}
-          });
-        }
-      } else {
-        preview.innerHTML = '<p>' + clean.replace(/\n/g, '<br>') + '</p>';
+      let html = typeof marked !== 'undefined'
+        ? marked.parse(text, { gfm: true, breaks: true })
+        : '<p>' + text.replace(/\n/g, '<br>') + '</p>';
+      preview.innerHTML = html;
+      if (typeof hljs !== 'undefined') {
+        preview.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
       }
     } catch(e) {
       preview.innerHTML = '<div class="preview-empty">渲染错误: ' + e.message + '</div>';
     }
   }
 
-  function loadFile(entry, index) {
-    document.querySelectorAll('.sidebar-item').forEach((el, i) => {
-      el.classList.toggle('active', i === index);
+  // ===== Read doc data from inline <script class="doc-data"> =====
+  function loadDocs() {
+    const nodes = document.querySelectorAll('script.doc-data');
+    const docs = [];
+    nodes.forEach(node => {
+      const order = parseInt(node.getAttribute('data-order'), 10);
+      const title = node.getAttribute('data-title') || '';
+      const content = node.textContent || '';
+      if (title) docs.push({ order, title, content });
     });
-    fetch(entry.fullName)
-      .then(res => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.text();
-      })
-      .then(text => renderMarkdown(text))
-      .catch(err => {
-        preview.innerHTML =
-          '<div class="preview-empty">' +
-          '<span style="color:#c00;">加载失败: ' + err.message + '</span>' +
-          '</div>';
-      });
+    docs.sort((a, b) => a.order - b.order);
+    renderSidebar(docs);
   }
 
-  function init(filesJson) {
-    let raw = [];
-    try {
-      raw = JSON.parse(filesJson);
-    } catch(e) {
-      raw = [];
-    }
-    const parsed = raw
-      .map(f => {
-        const p = parseFileName(f);
-        return { order: p.order, title: p.title, fullName: f };
-      })
-      .sort((a, b) => a.order - b.order);
-    renderSidebar(parsed);
+  // ===== Init =====
+  function waitLibs(cb, n) {
+    if (n <= 0) { cb(); return; }
+    if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') { cb(); return; }
+    setTimeout(() => waitLibs(cb, n - 1), 200);
   }
-
-  window.mdViewerInit = init;
-
-  function waitLibs(cb) {
-    if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') {
-      cb();
-      return;
-    }
-    setTimeout(() => waitLibs(cb), 50);
-  }
-
   waitLibs(() => {
-    if (window.__MD_FILES__) {
-      init(window.__MD_FILES__);
-    }
-  });
-
+    if (typeof marked !== 'undefined') marked.setOptions({ gfm: true, breaks: true });
+    loadDocs();
+  }, 100);
 })();
 </script>
 </body>
