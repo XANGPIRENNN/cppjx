@@ -1,553 +1,369 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>C++零基础教学</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-            overflow: hidden;
-            height: 100vh;
-        }
-        /* 主题变量 */
-        :root {
-            --sidebar-bg: #f6f8fa;
-            --sidebar-border: #d0d7de;
-            --text-primary: #1f2328;
-            --text-secondary: #57606a;
-            --accent: #0969da;
-            --accent-hover-bg: #eaeef2;
-            --active-bg: #ddf4ff;
-            --active-border: #0969da;
-            --content-bg: #ffffff;
-            --code-bg: #f6f8fa;
-            --modal-bg: #ffffff;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --overlay: rgba(0, 0, 0, 0.4);
-        }
-        body.dark {
-            --sidebar-bg: #1a1e24;
-            --sidebar-border: #30363d;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --accent: #4493f8;
-            --accent-hover-bg: #2d333b;
-            --active-bg: #1f2a3e;
-            --active-border: #4493f8;
-            --content-bg: #0d1117;
-            --code-bg: #161b22;
-            --modal-bg: #1a1e24;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --overlay: rgba(0, 0, 0, 0.6);
-        }
-        .app-container { display: flex; height: 100vh; width: 100%; }
-        /* 侧边栏 */
-        .sidebar {
-            width: 280px;
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--sidebar-border);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            flex-shrink: 0;
-        }
-        .sidebar-header {
-            padding: 20px 16px 12px;
-            border-bottom: 1px solid var(--sidebar-border);
-            position: sticky;
-            top: 0;
-            background: var(--sidebar-bg);
-            z-index: 10;
-        }
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-            font-size: 18px;
-            color: var(--accent);
-            margin-bottom: 16px;
-        }
-        .icon-svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fill: none; }
-        .repo-name {
-            font-size: 13px;
-            color: var(--text-secondary);
-            background: rgba(128, 128, 128, 0.12);
-            padding: 4px 10px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        .toc-wrapper { padding: 16px 8px 24px 12px; flex: 1; }
-        .toc-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            padding-left: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .toc-tree { list-style: none; }
-        .toc-link {
-            display: block;
-            padding: 6px 12px 6px 28px;
-            font-size: 14px;
-            color: var(--text-primary);
-            text-decoration: none;
-            border-radius: 6px;
-            cursor: pointer;
-            line-height: 1.45;
-        }
-        .toc-link:hover { background: var(--accent-hover-bg); color: var(--accent); }
-        .toc-link.active {
-            background: var(--active-bg);
-            color: var(--accent);
-            font-weight: 500;
-            border-left: 3px solid var(--active-border);
-            margin-left: -3px;
-        }
-        .toc-link.level-h1 { padding-left: 12px; font-weight: 600; }
-        .toc-link.level-h2 { padding-left: 28px; }
-        .toc-link.level-h3 { padding-left: 44px; font-size: 13px; }
-        .sidebar-footer {
-            padding: 16px 12px 20px;
-            border-top: 1px solid var(--sidebar-border);
-            margin-top: auto;
-        }
-        .settings-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            padding: 8px 12px;
-            background: transparent;
-            border: none;
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .settings-btn:hover { background: var(--accent-hover-bg); }
-        .settings-btn svg { width: 20px; height: 20px; stroke: currentColor; }
-        /* 内容区 */
-        .content-area {
-            flex: 1;
-            overflow-y: auto;
-            background: var(--content-bg);
-            padding: 32px 40px 60px;
-        }
-        .markdown-body {
-            max-width: 1000px;
-            margin: 0 auto;
-            color: var(--text-primary);
-            background: transparent;
-        }
-        .markdown-body pre { background: var(--code-bg) !important; }
-        /* 模态框 */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--overlay);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            backdrop-filter: blur(2px);
-        }
-        .modal-container {
-            background: var(--modal-bg);
-            color: var(--text-primary);
-            border-radius: 24px;
-            width: 520px;
-            max-width: 90%;
-            padding: 24px;
-            border: 1px solid var(--sidebar-border);
-            box-shadow: 0 25px 40px var(--shadow);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 20px;
-            font-weight: 600;
-        }
-        .close-modal { background: none; border: none; cursor: pointer; color: var(--text-secondary); }
-        .section-title { font-weight: 500; margin-bottom: 12px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
-        .preset-colors { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
-        .preset-item {
-            width: 48px; height: 48px; border-radius: 16px; cursor: pointer;
-            border: 2px solid transparent;
-        }
-        .preset-item.selected { border-color: var(--accent); transform: scale(1.05); }
-        .rgb-picker { background: var(--code-bg); padding: 16px; border-radius: 20px; margin-top: 8px; }
-        .rgb-canvas-area { width: 100%; aspect-ratio: 1 / 1; border-radius: 16px; overflow: hidden; cursor: crosshair; margin-bottom: 16px; border: 1px solid var(--sidebar-border); }
-        #rgbCanvas { width: 100%; height: 100%; display: block; }
-        .color-preview { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
-        .preview-box { width: 48px; height: 48px; border-radius: 12px; border: 1px solid var(--sidebar-border); }
-        .color-value { font-family: monospace; flex: 1; }
-        .apply-btn {
-            width: 100%; padding: 10px 16px; background: var(--accent); color: white;
-            border: none; border-radius: 40px; font-weight: 500; cursor: pointer; margin-top: 16px;
-        }
-        .reset-default { background: transparent; border: 1px solid var(--sidebar-border); color: var(--text-primary); margin-top: 8px; }
-        /* 移动端 */
-        .menu-toggle, .overlay { display: none; }
-        @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -280px; z-index: 1000; transition: left 0.25s; height: 100%; }
-            .sidebar.open { left: 0; }
-            .content-area { padding: 20px 16px; }
-            .menu-toggle {
-                display: flex; position: fixed; top: 16px; left: 16px; z-index: 1001;
-                background: var(--content-bg); border: 1px solid var(--sidebar-border);
-                border-radius: 8px; width: 36px; height: 36px; align-items: center;
-                justify-content: center; cursor: pointer;
-            }
-            .overlay {
-                display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                background: var(--overlay); z-index: 999;
-            }
-            .overlay.show { display: block; }
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--code-bg); }
-        ::-webkit-scrollbar-thumb { background: var(--sidebar-border); border-radius: 4px; }
-        .loading { padding: 60px; text-align: center; color: var(--text-secondary); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown 查看器</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+  /* ===== 基础样式（不变） ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg-secondary: #f8f8f8; --bg-tertiary: #f0f0f0;
+    --text: #1a1a1a; --text-secondary: #666666; --text-muted: #999999;
+    --border: #e0e0e0; --accent: #2c5f8a; --accent-light: #e8f0f8; --accent-hover: #1e4a6f;
+    --sidebar-width: 240px; --radius: 6px;
+    --font-mono: 'SF Mono','Fira Code','Cascadia Code',Consolas,monospace;
+    --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+  }
+  html { font-size: 15px; }
+  body {
+    font-family: var(--font-sans); color: var(--text); background: var(--bg);
+    line-height: 1.6; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; height: 48px; border-bottom: 1px solid var(--border);
+    background: var(--bg); flex-shrink: 0; user-select: none;
+  }
+  .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .sidebar-toggle {
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 32px; height: 32px; border: 1px solid var(--border);
+    border-radius: var(--radius); background: var(--bg); cursor: pointer;
+    color: var(--text-secondary); transition: all 0.15s;
+  }
+  .sidebar-toggle:hover { background: var(--bg-secondary); border-color: #ccc; }
+  .sidebar-toggle svg { display: block; }
+  .header-title { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .header-path {
+    font-size: 12px; color: var(--text-muted); overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 13px;
+    font-family: var(--font-sans); border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg); color: var(--text); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn:hover { background: var(--bg-secondary); border-color: #ccc; }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .main { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    width: var(--sidebar-width); flex-shrink: 0;
+    border-right: 1px solid var(--border); background: var(--bg-secondary);
+    display: flex; flex-direction: column; overflow: hidden;
+    transition: margin-left 0.25s ease;
+  }
+  .sidebar.collapsed { margin-left: calc(-1 * var(--sidebar-width)); }
+  .sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px 8px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .sidebar-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+  .sidebar-count { font-size: 11px; color: var(--text-muted); background: var(--bg-tertiary); padding: 1px 7px; border-radius: 8px; }
+  .sidebar-list { flex: 1; overflow-y: auto; padding: 6px 0; }
+  .sidebar-list::-webkit-scrollbar { width: 4px; }
+  .sidebar-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .sidebar-item {
+    display: block; width: 100%; text-align: left;
+    padding: 7px 16px 7px 20px; font-size: 13px; color: var(--text-secondary);
+    background: none; border: none; cursor: pointer; transition: all 0.1s;
+    font-family: var(--font-sans); line-height: 1.4;
+    border-left: 3px solid transparent;
+  }
+  .sidebar-item:hover { background: var(--bg-tertiary); color: var(--text); }
+  .sidebar-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; border-left-color: var(--accent); }
+  .sidebar-empty { padding: 32px 16px; text-align: center; color: var(--text-muted); font-size: 13px; line-height: 1.8; }
+  .sidebar-404 {
+    padding: 32px 16px; text-align: center;
+  }
+  .sidebar-404-code {
+    font-size: 48px; font-weight: 700; color: var(--border); line-height: 1;
+    margin-bottom: 12px;
+  }
+  .sidebar-404-msg {
+    font-size: 13px; color: var(--text-muted); line-height: 1.6;
+  }
+
+  /* ===== Content ===== */
+  .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+  .content-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 20px; border-bottom: 1px solid var(--border);
+    background: var(--bg); flex-shrink: 0;
+  }
+  .content-bar-title {
+    font-size: 13px; font-weight: 500; color: var(--text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .preview-wrap {
+    flex: 1; overflow-y: auto; padding: 28px 36px; background: var(--bg);
+  }
+  .preview-wrap::-webkit-scrollbar { width: 6px; }
+  .preview-wrap::-webkit-scrollbar-track { background: transparent; }
+  .preview-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .preview-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; color: var(--text-muted); font-size: 14px; gap: 12px;
+  }
+
+  /* ===== Preview Styles ===== */
+  .preview-wrap h1, .preview-wrap h2, .preview-wrap h3,
+  .preview-wrap h4, .preview-wrap h5, .preview-wrap h6 { margin: 1.2em 0 0.5em; font-weight: 600; line-height: 1.3; color: var(--text); }
+  .preview-wrap h1 { font-size: 1.75em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border); margin-top: 0; }
+  .preview-wrap h2 { font-size: 1.4em; padding-bottom: 0.25em; border-bottom: 1px solid var(--border); }
+  .preview-wrap h3 { font-size: 1.15em; }
+  .preview-wrap p { margin: 0.7em 0; }
+  .preview-wrap strong { font-weight: 600; }
+  .preview-wrap blockquote { margin: 1em 0; padding: 12px 20px; border-left: 4px solid var(--accent); background: var(--accent-light); border-radius: 0 var(--radius) var(--radius) 0; color: var(--text-secondary); }
+  .preview-wrap blockquote p { margin: 0.3em 0; }
+  .preview-wrap ul, .preview-wrap ol { margin: 0.6em 0; padding-left: 1.8em; }
+  .preview-wrap li { margin: 0.3em 0; }
+  .preview-wrap hr { border: none; border-top: 1px solid var(--border); margin: 1.5em 0; }
+  .preview-wrap img { max-width: 100%; border-radius: var(--radius); margin: 1em 0; display: block; }
+  .preview-wrap table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.9em; }
+  .preview-wrap th, .preview-wrap td { border: 1px solid var(--border); padding: 8px 14px; text-align: left; }
+  .preview-wrap th { background: var(--bg-secondary); font-weight: 600; }
+  .preview-wrap tr:nth-child(even) { background: var(--bg-secondary); }
+  .preview-wrap code { font-family: var(--font-mono); font-size: 0.88em; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 3px; color: #d63384; }
+  .preview-wrap pre { margin: 1em 0; border-radius: var(--radius); overflow-x: auto; background: #f6f8fa; border: 1px solid var(--border); }
+  .preview-wrap pre code { background: none; padding: 16px 20px; display: block; color: var(--text); font-size: 0.85em; line-height: 1.6; }
+  .preview-wrap pre::-webkit-scrollbar { height: 5px; }
+  .preview-wrap pre::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+  .preview-wrap input[type="checkbox"] { margin-right: 6px; accent-color: var(--accent); }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--text); color: var(--bg); padding: 10px 24px; border-radius: var(--radius);
+    font-size: 13px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 768px) {
+    :root { --sidebar-width: 200px; }
+    .header-path { display: none; }
+    .preview-wrap { padding: 16px 20px; }
+  }
+</style>
 </head>
 <body>
-<div class="app-container">
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-area">
-                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 4H20V20H4V4Z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 8H16M8 12H14M8 16H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                <span>文档中心</span>
-            </div>
-            <div class="repo-name">README.md</div>
-        </div>
-        <div class="toc-wrapper">
-            <div class="toc-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg> 目录</div>
-            <ul class="toc-tree" id="tocList"><li><div class="loading">加载中...</div></li></ul>
-        </div>
-        <div class="sidebar-footer">
-            <button class="settings-btn" id="settingsBtn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15.05L18.3 15.6C18.1 15.7 18 15.95 18.05 16.2L18.25 17.4C18.35 17.95 18 18.45 17.45 18.55L16.3 18.8C16.05 18.85 15.85 19.05 15.8 19.3L15.55 20.45C15.45 21 14.95 21.35 14.4 21.25L13.2 21.05C12.95 21 12.7 21.05 12.5 21.2L11.55 21.85C11.1 22.15 10.5 22.05 10.2 21.6L9.55 20.65C9.4 20.45 9.2 20.35 9 20.35L7.8 20.55C7.25 20.65 6.75 20.3 6.65 19.75L6.4 18.6C6.35 18.35 6.15 18.15 5.9 18.1L4.75 17.85C4.2 17.75 3.85 17.25 3.95 16.7L4.15 15.5C4.2 15.25 4.15 15 4 14.8L3.35 13.85C3.05 13.4 3.15 12.8 3.6 12.5L4.55 11.85C4.75 11.7 4.85 11.5 4.85 11.25L4.65 10.05C4.55 9.5 4.9 9 5.45 8.9L6.6 8.65C6.85 8.6 7.05 8.4 7.1 8.15L7.35 7C7.45 6.45 7.95 6.1 8.5 6.2L9.7 6.4C9.95 6.45 10.2 6.4 10.4 6.25L11.35 5.6C11.8 5.3 12.4 5.4 12.7 5.85L13.35 6.8C13.5 7 13.7 7.1 13.9 7.1L15.1 6.9C15.65 6.8 16.15 7.15 16.25 7.7L16.5 8.85C16.55 9.1 16.75 9.3 17 9.35L18.15 9.6C18.7 9.7 19.05 10.2 18.95 10.75L18.75 11.95C18.7 12.2 18.75 12.45 18.9 12.65L19.55 13.6C19.85 14.05 19.75 14.65 19.3 14.95L19.4 15.05Z"/></svg>
-                <span>主题设置</span>
-            </button>
-        </div>
-    </aside>
-    <main class="content-area" id="contentArea">
-        <div class="markdown-body" id="markdownContainer"><div class="loading">📄 正在加载 README.md ...</div></div>
-    </main>
+
+<header class="header">
+  <div class="header-left">
+    <button class="sidebar-toggle" id="sidebarToggle" title="切换侧边栏">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <line x1="3" y1="4" x2="13" y2="4"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="12" x2="13" y2="12"/>
+      </svg>
+    </button>
+    <span class="header-title">Markdown 查看器</span>
+    <span class="header-path" id="headerPath"></span>
+  </div>
+</header>
+
+<div class="main">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">目录</span>
+      <span class="sidebar-count" id="fileCount">0</span>
+    </div>
+    <div class="sidebar-list" id="sidebarList"></div>
+  </aside>
+
+  <main class="content">
+    <div class="content-bar">
+      <span class="content-bar-title" id="contentTitle">Markdown 查看器</span>
+    </div>
+    <div class="preview-wrap" id="preview">
+      <div class="preview-empty">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+        <span>正在加载文档列表...</span>
+      </div>
+    </div>
+  </main>
 </div>
-<div class="menu-toggle" id="menuToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></div>
-<div class="overlay" id="overlay"></div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-    // ==================== 加载 README.md 并生成目录 ====================
-    let tocItems = [];
+(function() {
+  'use strict';
 
-    async function loadReadme() {
-        const container = document.getElementById('markdownContainer');
-        try {
-            const response = await fetch('./README.md');
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const markdown = await response.text();
-            const html = marked.parse(markdown);
-            container.innerHTML = html;
-            hljs.highlightAll();
-            extractAndBuildTOC();
-            setupScrollSpy();
-        } catch (err) {
-            console.warn(err);
-            container.innerHTML = `
-                <div class="markdown-body">
-                    <h1>📄 未找到 README.md</h1>
-                    <p>请将 <code>README.md</code> 文件放在与 <code>index.html</code> 相同的目录下。</p>
-                    <hr>
-                    <h2>示例预览</h2>
-                    <p>这是一个文档预览工具，支持左侧目录树、主题定制。</p>
-                    <pre><code class="language-bash"># 使用方法
-1. 将 index.html 和 README.md 放在一起
-2. 启动本地服务器或直接打开
-3. 左侧自动生成标题目录</code></pre>
-                </div>
-            `;
-            hljs.highlightAll();
-            // 使用示例标题构建目录
-            buildTOCDemo();
-        }
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarList = document.getElementById('sidebarList');
+  const fileCount = document.getElementById('fileCount');
+  const preview = document.getElementById('preview');
+  const contentTitle = document.getElementById('contentTitle');
+  const headerPath = document.getElementById('headerPath');
+  const toastEl = document.getElementById('toast');
+
+  let toastTimer = null;
+  let sidebarVisible = true;
+
+  sidebarToggle.addEventListener('click', () => {
+    sidebarVisible = !sidebarVisible;
+    sidebar.classList.toggle('collapsed', !sidebarVisible);
+  });
+
+  function showToast(msg) {
+    clearTimeout(toastTimer);
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2500);
+  }
+
+  function parseFileName(name) {
+    const match = name.match(/^(\d+)\s*[.、．]\s*(.+)\.md$/i);
+    if (match) return { order: parseInt(match[1], 10), title: match[2].trim() };
+    const base = name.replace(/\.md$/i, '');
+    return { order: Infinity, title: base };
+  }
+
+  function renderSidebar(files) {
+    sidebarList.innerHTML = '';
+    if (!files || files.length === 0) {
+      fileCount.textContent = '0';
+      headerPath.textContent = '';
+      contentTitle.textContent = 'Markdown 查看器';
+      preview.innerHTML =
+        '<div class="preview-empty">' +
+        '<div class="sidebar-404">' +
+        '<div class="sidebar-404-code">404</div>' +
+        '<div class="sidebar-404-msg">当前目录下没有 Markdown 文件</div>' +
+        '</div></div>';
+      sidebarList.innerHTML =
+        '<div class="sidebar-404">' +
+        '<div class="sidebar-404-code">404</div>' +
+        '<div class="sidebar-404-msg">未找到 Markdown 文件</div>' +
+        '</div>';
+      return;
     }
 
-    function extractAndBuildTOC() {
-        const headings = document.querySelectorAll('.markdown-body h1, .markdown-body h2, .markdown-body h3');
-        if (!headings.length) {
-            document.getElementById('tocList').innerHTML = '<li><span class="toc-link" style="cursor:default;">无标题</span></li>';
-            return;
-        }
-        tocItems = [];
-        headings.forEach((h, idx) => {
-            let id = h.id;
-            if (!id) {
-                id = (h.innerText || `heading-${idx}`).toLowerCase().replace(/[^\w\u4e00-\u9fa5]+/g, '-');
-                h.id = id;
+    fileCount.textContent = files.length;
+    files.forEach((entry, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'sidebar-item';
+      btn.textContent = entry.title;
+      btn.dataset.index = index;
+      btn.addEventListener('click', () => loadFile(entry, index));
+      sidebarList.appendChild(btn);
+    });
+
+    if (files.length > 0) loadFile(files[0], 0);
+  }
+
+  // ===== 核心修复：过滤裸 CSS =====
+  function stripBareCSS(text) {
+    // 去掉 /* ... */ 注释
+    text = text.replace(/\/\*[\s\S]*?\*\//g, '');
+    // 去掉 .class { ... } 裸CSS块（不包含在 ```css 中的）
+    text = text.replace(/\n*[.\w#\-]+\s*\{[\s\S]*?\}\s*/g, '');
+    return text;
+  }
+
+  function renderMarkdown(text) {
+    if (!text || !text.trim()) {
+      preview.innerHTML = '<div class="preview-empty"><span>文件内容为空</span></div>';
+      return;
+    }
+    try {
+      // 先过滤裸 CSS
+      let clean = stripBareCSS(text);
+
+      if (typeof marked !== 'undefined') {
+        marked.setOptions({
+          gfm: true,
+          breaks: true,
+          highlight: function(code, lang) {
+            if (lang && hljs && hljs.getLanguage(lang)) {
+              try {
+                return hljs.highlight(code, { language: lang }).value;
+              } catch (e) {
+                return code;
+              }
             }
-            tocItems.push({
-                id: id,
-                text: h.innerText,
-                level: parseInt(h.tagName[1])
-            });
+            return code;
+          }
         });
-        renderTOC();
-    }
-
-    function buildTOCDemo() {
-        const demoHeadings = document.querySelectorAll('.markdown-body h1, .markdown-body h2, .markdown-body h3');
-        if (demoHeadings.length) {
-            extractAndBuildTOC();
-        } else {
-            const fallback = [
-                { id: 'intro', text: '简介', level: 1 },
-                { id: 'usage', text: '使用方法', level: 2 }
-            ];
-            renderTOCFromArray(fallback);
-        }
-    }
-
-    function renderTOC() {
-        const ul = document.getElementById('tocList');
-        if (!ul) return;
-        ul.innerHTML = '';
-        tocItems.forEach(item => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.className = `toc-link level-h${item.level}`;
-            a.textContent = item.text;
-            a.setAttribute('data-id', item.id);
-            a.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = document.getElementById(item.id);
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    updateActiveLink(item.id);
-                }
-                if (window.innerWidth <= 768) closeSidebar();
-            });
-            li.appendChild(a);
-            ul.appendChild(li);
-        });
-    }
-
-    function renderTOCFromArray(items) {
-        const ul = document.getElementById('tocList');
-        ul.innerHTML = '';
-        items.forEach(item => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.className = `toc-link level-h${item.level}`;
-            a.textContent = item.text;
-            a.setAttribute('data-id', item.id);
-            a.addEventListener('click', (e) => {
-                e.preventDefault();
-                const target = document.getElementById(item.id);
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                if (window.innerWidth <= 768) closeSidebar();
-            });
-            li.appendChild(a);
-            ul.appendChild(li);
-        });
-    }
-
-    function updateActiveLink(activeId) {
-        document.querySelectorAll('.toc-link').forEach(link => {
-            if (link.getAttribute('data-id') === activeId) link.classList.add('active');
-            else link.classList.remove('active');
-        });
-    }
-
-    function setupScrollSpy() {
-        const headings = document.querySelectorAll('.markdown-body h1, .markdown-body h2, .markdown-body h3');
-        if (!headings.length) return;
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    updateActiveLink(entry.target.id);
-                }
-            });
-        }, { rootMargin: '-70px 0px -70% 0px', threshold: 0 });
-        headings.forEach(h => observer.observe(h));
-    }
-
-    // ==================== 主题设置 (localStorage 存储) ====================
-    const THEME_KEY = 'doc_theme_config';
-
-    function saveTheme(themeData) {
-        localStorage.setItem(THEME_KEY, JSON.stringify(themeData));
-    }
-
-    function loadTheme() {
-        const saved = localStorage.getItem(THEME_KEY);
-        if (saved) {
+        const html = marked.parse(clean);
+        preview.innerHTML = html;
+        if (typeof hljs !== 'undefined') {
+          preview.querySelectorAll('pre code').forEach(block => {
             try {
-                const theme = JSON.parse(saved);
-                if (theme.type === 'pure' && theme.hex) applyPureTheme(theme.hex);
-                else if (theme.type === 'gradient' && theme.gradient) applyGradientTheme(theme.gradient);
-                else if (theme.type === 'custom' && theme.hex) applyPureTheme(theme.hex);
-                else applyPureTheme('#0969da');
-            } catch(e) { applyPureTheme('#0969da'); }
-        } else {
-            applyPureTheme('#0969da');
+              hljs.highlightElement(block);
+            } catch (e) {}
+          });
         }
+      } else {
+        preview.innerHTML = '<p>' + clean.replace(/\n/g, '<br>') + '</p>';
+      }
+    } catch(e) {
+      preview.innerHTML = '<div class="preview-empty">渲染错误: ' + e.message + '</div>';
     }
+  }
 
-    function applyPureTheme(hex) {
-        document.documentElement.style.setProperty('--accent', hex);
-        document.documentElement.style.setProperty('--active-border', hex);
-        document.documentElement.style.setProperty('--sidebar-bg', '#f6f8fa');
-        document.documentElement.style.setProperty('--content-bg', '#ffffff');
-        document.body.classList.remove('dark');
-        saveTheme({ type: 'pure', hex: hex });
+  function loadFile(entry, index) {
+    document.querySelectorAll('.sidebar-item').forEach((el, i) => {
+      el.classList.toggle('active', i === index);
+    });
+    contentTitle.textContent = entry.title + '.md';
+    fetch(entry.fullName)
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(text => renderMarkdown(text))
+      .catch(err => {
+        preview.innerHTML =
+          '<div class="preview-empty">' +
+          '<span style="color:#c00;">加载失败: ' + err.message + '</span>' +
+          '</div>';
+      });
+  }
+
+  function init(filesJson) {
+    let raw = [];
+    try {
+      raw = JSON.parse(filesJson);
+    } catch(e) {
+      raw = [];
     }
+    const parsed = raw
+      .map(f => {
+        const p = parseFileName(f);
+        return { order: p.order, title: p.title, fullName: f };
+      })
+      .sort((a, b) => a.order - b.order);
+    renderSidebar(parsed);
+  }
 
-    function applyGradientTheme(gradient) {
-        document.documentElement.style.setProperty('--sidebar-bg', gradient);
-        document.documentElement.style.setProperty('--content-bg', gradient);
-        document.documentElement.style.setProperty('--accent', '#ffffff');
-        document.documentElement.style.setProperty('--active-border', '#ffffff');
-        saveTheme({ type: 'gradient', gradient: gradient });
+  window.mdViewerInit = init;
+
+  function waitLibs(cb) {
+    if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') {
+      cb();
+      return;
     }
+    setTimeout(() => waitLibs(cb), 50);
+  }
 
-    // 弹窗逻辑
-    let modalActive = false;
-    const purePresets = [
-        { name: '蓝', hex: '#0969da' },
-        { name: '绿', hex: '#2da44e' },
-        { name: '橙', hex: '#d97706' },
-        { name: '紫', hex: '#8250df' },
-        { name: '红', hex: '#cf222e' }
-    ];
-    const gradientPresets = [
-        { name: '暮光紫', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-        { name: '极光绿', value: 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)' },
-        { name: '日落橙', value: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }
-    ];
-
-    function openThemeModal() {
-        if (modalActive) return;
-        modalActive = true;
-        const modalDiv = document.createElement('div');
-        modalDiv.className = 'modal-overlay';
-        modalDiv.innerHTML = `
-            <div class="modal-container">
-                <div class="modal-header">
-                    <span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L15 8H22L16 12L19 18L12 14L5 18L8 12L2 8H9L12 2Z"/></svg> 主题设置</span>
-                    <button class="close-modal" id="closeModalBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6L18 18"/></svg></button>
-                </div>
-                <div class="theme-section">
-                    <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="2" width="20" height="20" rx="2"/></svg> 纯色预设</div>
-                    <div class="preset-colors" id="purePresetList"></div>
-                </div>
-                <div class="theme-section">
-                    <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L15 8H22L16 12L19 18L12 14L5 18L8 12L2 8H9L12 2Z"/></svg> 渐变预设</div>
-                    <div class="preset-colors" id="gradientPresetList"></div>
-                </div>
-                <div class="theme-section">
-                    <div class="section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/></svg> RGB 自定义</div>
-                    <div class="rgb-picker">
-                        <div class="rgb-canvas-area"><canvas id="rgbCanvas" width="400" height="400"></canvas></div>
-                        <div class="color-preview"><div class="preview-box" id="customPreview" style="background:#0969da;"></div><div class="color-value" id="selectedHexValue">#0969da</div></div>
-                        <button class="apply-btn" id="applyCustomColor">应用自定义颜色</button>
-                    </div>
-                </div>
-                <button class="apply-btn reset-default" id="resetDefaultBtn">恢复默认</button>
-            </div>
-        `;
-        document.body.appendChild(modalDiv);
-
-        const pureContainer = document.getElementById('purePresetList');
-        purePresets.forEach(p => {
-            const swatch = document.createElement('div');
-            swatch.className = 'preset-item';
-            swatch.style.backgroundColor = p.hex;
-            swatch.addEventListener('click', () => {
-                applyPureTheme(p.hex);
-                closeModal();
-            });
-            pureContainer.appendChild(swatch);
-        });
-
-        const gradContainer = document.getElementById('gradientPresetList');
-        gradientPresets.forEach(g => {
-            const swatch = document.createElement('div');
-            swatch.className = 'preset-item';
-            swatch.style.background = g.value;
-            swatch.addEventListener('click', () => {
-                applyGradientTheme(g.value);
-                closeModal();
-            });
-            gradContainer.appendChild(swatch);
-        });
-
-        const canvas = document.getElementById('rgbCanvas');
-        const ctx = canvas.getContext('2d');
-        function drawRGB() {
-            const w = canvas.width, h = canvas.height;
-            for (let x = 0; x < w; x++) {
-                const r = Math.floor(255 * x / w);
-                for (let y = 0; y < h; y++) {
-                    const g = Math.floor(255 * y / h);
-                    ctx.fillStyle = `rgb(${r}, ${g}, 128)`;
-                    ctx.fillRect(x, y, 1, 1);
-                }
-            }
-        }
-        canvas.width = 400; canvas.height = 400;
-        drawRGB();
-        let currentPick = '#0969da';
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const sx = canvas.width / rect.width, sy = canvas.height / rect.height;
-            const x = (e.clientX - rect.left) * sx, y = (e.clientY - rect.top) * sy;
-            if (x >= 0 && x < canvas.width && y >= 0 && y < canvas.height) {
-                const px = ctx.getImageData(x, y, 1, 1).data;
-                currentPick = '#' + ((1 << 24) + (px[0] << 16) + (px[1] << 8) + px[2]).toString(16).slice(1);
-                document.getElementById('customPreview').style.backgroundColor = currentPick;
-                document.getElementById('selectedHexValue').innerText = currentPick;
-            }
-        });
-        document.getElementById('applyCustomColor').addEventListener('click', () => {
-            applyPureTheme(currentPick);
-            closeModal();
-        });
-        document.getElementById('resetDefaultBtn').addEventListener('click', () => {
-            applyPureTheme('#0969da');
-            closeModal();
-        });
-        function closeModal() { modalDiv.remove(); modalActive = false; }
-        document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-        modalDiv.addEventListener('click', (e) => { if (e.target === modalDiv) closeModal(); });
+  waitLibs(() => {
+    if (window.__MD_FILES__) {
+      init(window.__MD_FILES__);
     }
+  });
 
-    document.getElementById('settingsBtn').addEventListener('click', openThemeModal);
-
-    // 移动端
-    const menuToggle = document.getElementById('menuToggle');
-    const overlay = document.getElementById('overlay');
-    const sidebar = document.getElementById('sidebar');
-    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
-    if (menuToggle) menuToggle.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('show'); });
-    if (overlay) overlay.addEventListener('click', closeSidebar);
-
-    loadTheme();
-    loadReadme();
+})();
 </script>
 </body>
 </html>
