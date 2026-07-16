@@ -1,0 +1,75 @@
+name: 部署到 GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 注入文档列表到 index.html
+        run: |
+          node -e "
+          const fs = require('fs');
+          const dir = process.cwd();
+          const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
+          const entries = files.map(f => {
+            const m = f.match(/^(\\d+)\\s*[.、．]\\s*(.+)\\.md\$/i);
+            return {
+              order: m ? parseInt(m[1], 10) : 999,
+              title: m ? m[2].trim() : f.replace(/\\.md\$/i, ''),
+              file: f
+            };
+          });
+          entries.sort((a, b) => a.order - b.order);
+
+          // 构建文档数据：直接内嵌内容
+          let tags = '';
+          for (const e of entries) {
+            const content = fs.readFileSync(e.file, 'utf-8');
+            // 转义 </script> 防止破坏页面
+            const safe = content.replace(/<\\/script>/gi, '<\\\\/script>');
+            tags += '<script class=\"doc-data\" data-order=\"' + e.order + '\" data-title=\"' + e.title + '\" data-file=\"' + e.file + '\">' + safe + '<\\/script>\\n';
+          }
+
+          const html = fs.readFileSync('index.html', 'utf-8');
+          const marker = '<!-- ====== 文档数据：由 GitHub Actions 构建时注入 ====== -->';
+          // 如果占位符不存在，则在 </body> 前插入
+          let result;
+          if (html.includes(marker)) {
+            result = html.replace(marker, marker + '\\n' + tags);
+          } else {
+            result = html.replace('</body>', tags + '</body>');
+          }
+          fs.writeFileSync('index.html', result, 'utf-8');
+          console.log('已内嵌 ' + entries.length + ' 个文档到 index.html');
+          "
+
+      - name: 配置 Pages
+        uses: actions/configure-pages@v4
+
+      - name: 上传产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
