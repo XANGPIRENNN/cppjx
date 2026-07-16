@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>零基础C++教程</title>
+<title>Markdown 查看器</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -183,8 +183,9 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- ===== 文档数据：手动添加，或由 GitHub Actions 自动注入 ===== -->
-
+<!-- data.js 由 build.ps1 生成 -->
+<script src="data.js"></script>
+<script>
 (function() {
   'use strict';
 
@@ -258,45 +259,16 @@
     }
   }
 
-  // ===== Load markdown files from files.json manifest =====
+  // ===== Load doc data from external data.js =====
   function loadDocs() {
-    fetch('files.json')
-      .then(res => {
-        if (!res.ok) throw new Error('无法加载文件列表（files.json）');
-        return res.json();
-      })
-      .then(files => {
-        if (!Array.isArray(files) || files.length === 0) {
-          renderSidebar([]);
-          return;
-        }
-        const docs = [];
-        const promises = files.map(file => {
-          // 匹配规则：数字 + ". " + 标题 + ".md"，如 "1. 你好,C++.md"
-          const match = file.match(/^(\d+)\.\s+(.+)\.md$/);
-          if (!match) return null; // 不符合规则的文件直接跳过
-          const order = parseInt(match[1], 10);
-          const title = match[2];
-          return fetch(file)
-            .then(res => {
-              if (!res.ok) return null;
-              return res.text();
-            })
-            .then(content => {
-              if (content) docs.push({ order, title, content });
-            });
-        }).filter(Boolean);
-        return Promise.all(promises).then(() => {
-          docs.sort((a, b) => a.order - b.order);
-          renderSidebar(docs);
-        });
-      })
-      .catch(err => {
-        console.error(err);
-        sidebarList.innerHTML = '<div class="sidebar-404"><div class="sidebar-404-code">404</div><div class="sidebar-404-msg">' + err.message + '</div></div>';
-        preview.innerHTML = '<div class="preview-empty"><div style="font-size:48px;font-weight:700;color:#e0e0e0;line-height:1">404</div><span>无法加载文件列表</span></div>';
-        fileCount.textContent = '0';
-      });
+    if (typeof DOC_DATA === 'undefined' || !DOC_DATA || DOC_DATA.length === 0) {
+      renderSidebar([]);
+      return;
+    }
+    // 验证每个条目是否符合规则
+    const docs = DOC_DATA.filter(d => d.order && d.title && d.content)
+      .sort((a, b) => a.order - b.order);
+    renderSidebar(docs);
   }
 
   // ===== Init =====
