@@ -8,19 +8,31 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <style>
-  /* ===== 基础样式（不变） ===== */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #ffffff; --bg-secondary: #f8f8f8; --bg-tertiary: #f0f0f0;
-    --text: #1a1a1a; --text-secondary: #666666; --text-muted: #999999;
-    --border: #e0e0e0; --accent: #2c5f8a; --accent-light: #e8f0f8; --accent-hover: #1e4a6f;
-    --sidebar-width: 240px; --radius: 6px;
+    --bg: #f5f0eb;
+    --bg-secondary: #efe9e2;
+    --bg-tertiary: #e8e0d6;
+    --text: #2c2416;
+    --text-secondary: #6b5d4a;
+    --text-muted: #9a8b78;
+    --border: #d9cdbc;
+    --accent: #8b5a2b;
+    --accent-light: #f0e6d8;
+    --accent-hover: #6e451e;
+    --sidebar-width: 240px;
+    --radius: 8px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.06);
     --font-mono: 'SF Mono','Fira Code','Cascadia Code',Consolas,monospace;
     --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
   }
   html { font-size: 15px; }
   body {
-    font-family: var(--font-sans); color: var(--text); background: var(--bg);
+    font-family: var(--font-sans); color: var(--text);
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(139,90,43,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 50%, rgba(139,90,43,0.03) 0%, transparent 60%);
     line-height: 1.6; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
   }
   a { color: var(--accent); text-decoration: none; }
@@ -28,28 +40,26 @@
   .header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 16px; height: 48px; border-bottom: 1px solid var(--border);
-    background: var(--bg); flex-shrink: 0; user-select: none;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    flex-shrink: 0; user-select: none;
   }
   .header-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
   .sidebar-toggle {
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     width: 32px; height: 32px; border: 1px solid var(--border);
-    border-radius: var(--radius); background: var(--bg); cursor: pointer;
+    border-radius: var(--radius); background: rgba(255,255,255,0.5); cursor: pointer;
     color: var(--text-secondary); transition: all 0.15s;
   }
-  .sidebar-toggle:hover { background: var(--bg-secondary); border-color: #ccc; }
+  .sidebar-toggle:hover { background: var(--bg-secondary); }
   .sidebar-toggle svg { display: block; }
-  .header-path {
-    font-size: 12px; color: var(--text-muted); overflow: hidden;
-    text-overflow: ellipsis; white-space: nowrap;
-  }
-  .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .btn {
     display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; font-size: 13px;
     font-family: var(--font-sans); border: 1px solid var(--border); border-radius: var(--radius);
-    background: var(--bg); color: var(--text); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    background: rgba(255,255,255,0.5); color: var(--text); cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
-  .btn:hover { background: var(--bg-secondary); border-color: #ccc; }
+  .btn:hover { background: var(--bg-secondary); }
   .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
   .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
   .main { display: flex; flex: 1; overflow: hidden; position: relative; }
@@ -57,7 +67,10 @@
   /* ===== Sidebar ===== */
   .sidebar {
     width: var(--sidebar-width); flex-shrink: 0;
-    border-right: 1px solid var(--border); background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     display: flex; flex-direction: column; overflow: hidden;
     transition: margin-left 0.25s ease;
   }
@@ -94,7 +107,14 @@
   /* ===== Content ===== */
   .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
   .preview-wrap {
-    flex: 1; overflow-y: auto; padding: 28px 36px; background: var(--bg);
+    flex: 1; overflow-y: auto; padding: 32px 40px;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    margin: 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
   }
   .preview-wrap::-webkit-scrollbar { width: 6px; }
   .preview-wrap::-webkit-scrollbar-track { background: transparent; }
@@ -104,40 +124,206 @@
     height: 100%; color: var(--text-muted); font-size: 14px; gap: 12px;
   }
 
-  /* ===== Preview Styles ===== */
+  /* ===== Preview Typography ===== */
   .preview-wrap h1, .preview-wrap h2, .preview-wrap h3,
   .preview-wrap h4, .preview-wrap h5, .preview-wrap h6 { margin: 1.2em 0 0.5em; font-weight: 600; line-height: 1.3; color: var(--text); }
-  .preview-wrap h1 { font-size: 1.75em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border); margin-top: 0; }
+  .preview-wrap h1 { font-size: 1.75em; padding-bottom: 0.3em; border-bottom: 2px solid var(--accent-light); margin-top: 0; }
   .preview-wrap h2 { font-size: 1.4em; padding-bottom: 0.25em; border-bottom: 1px solid var(--border); }
   .preview-wrap h3 { font-size: 1.15em; }
   .preview-wrap p { margin: 0.7em 0; }
   .preview-wrap strong { font-weight: 600; }
-  .preview-wrap blockquote { margin: 1em 0; padding: 12px 20px; border-left: 4px solid var(--accent); background: var(--accent-light); border-radius: 0 var(--radius) var(--radius) 0; color: var(--text-secondary); }
+  .preview-wrap blockquote {
+    margin: 1em 0; padding: 12px 20px;
+    border-left: 4px solid var(--accent);
+    background: var(--accent-light);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    color: var(--text-secondary);
+  }
   .preview-wrap blockquote p { margin: 0.3em 0; }
   .preview-wrap ul, .preview-wrap ol { margin: 0.6em 0; padding-left: 1.8em; }
   .preview-wrap li { margin: 0.3em 0; }
   .preview-wrap hr { border: none; border-top: 1px solid var(--border); margin: 1.5em 0; }
-  .preview-wrap img { max-width: 100%; border-radius: var(--radius); margin: 1em 0; display: block; }
-  .preview-wrap table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.9em; }
+  .preview-wrap img { max-width: 100%; border-radius: var(--radius); margin: 1em 0; display: block; box-shadow: var(--shadow); }
+  .preview-wrap table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.9em; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
   .preview-wrap th, .preview-wrap td { border: 1px solid var(--border); padding: 8px 14px; text-align: left; }
   .preview-wrap th { background: var(--bg-secondary); font-weight: 600; }
-  .preview-wrap tr:nth-child(even) { background: var(--bg-secondary); }
-  .preview-wrap code { font-family: var(--font-mono); font-size: 0.88em; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 3px; color: #d63384; }
-  .preview-wrap pre { margin: 1em 0; border-radius: var(--radius); overflow-x: auto; background: #f6f8fa; border: 1px solid var(--border); }
+  .preview-wrap tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+  .preview-wrap code {
+    font-family: var(--font-mono); font-size: 0.88em;
+    background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px;
+    color: #b0455a;
+  }
+  .preview-wrap pre {
+    margin: 1em 0; border-radius: var(--radius); overflow-x: auto;
+    background: #faf8f5; border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
   .preview-wrap pre code { background: none; padding: 16px 20px; display: block; color: var(--text); font-size: 0.85em; line-height: 1.6; }
   .preview-wrap pre::-webkit-scrollbar { height: 5px; }
   .preview-wrap pre::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
   .preview-wrap input[type="checkbox"] { margin-right: 6px; accent-color: var(--accent); }
+
+  /* ===== Toast ===== */
   .toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--text); color: var(--bg); padding: 10px 24px; border-radius: var(--radius);
+    background: var(--text); color: #f5f0eb; padding: 10px 24px; border-radius: var(--radius);
     font-size: 13px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== Loading ===== */
+  .spinner {
+    display: inline-block; width: 20px; height: 20px;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .preview-loading {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; color: var(--text-muted); font-size: 14px; gap: 12px;
+  }
+
+  /* ===== Background Image ===== */
+  .has-bg .preview-wrap {
+    background: transparent;
+    position: relative;
+  }
+  .has-bg .preview-wrap::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(var(--bg-blur, 0px));
+    opacity: calc(1 - var(--bg-dark, 0) / 100);
+  }
+
+  /* ===== 背景设置按钮（左下角，纯图标） ===== */
+  .bg-toggle-btn {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    z-index: 999;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    color: var(--text-secondary);
+    padding: 0;
+  }
+  .bg-toggle-btn:hover { background: rgba(255,255,255,0.9); }
+  .bg-toggle-btn svg { display: block; }
+
+  /* ===== 弹窗 ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-panel {
+    background: var(--bg);
+    border-radius: 12px;
+    width: 380px;
+    max-width: 90vw;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.25s ease;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .modal-overlay.open .modal-panel {
+    transform: translateY(0) scale(1);
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title {
+    font-size: 15px; font-weight: 600; color: var(--text);
+  }
+  .modal-close {
+    display: flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border: none; background: none;
+    border-radius: 6px; cursor: pointer; color: var(--text-muted);
+    transition: all 0.12s; font-size: 18px;
+  }
+  .modal-close:hover { background: var(--bg-tertiary); color: var(--text); }
+  .modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .bg-preview-box {
+    width: 100%; height: 100px; border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; background-size: cover; background-position: center;
+    font-size: 13px; color: var(--text-muted); cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .bg-preview-box:hover { border-color: var(--accent); }
+  .bg-row {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .bg-row .bg-label {
+    font-size: 13px; color: var(--text-secondary);
+    display: flex; justify-content: space-between;
+  }
+  .bg-row .bg-val {
+    font-family: var(--font-mono);
+    font-size: 12px; color: var(--text-muted);
+    min-width: 24px; text-align: right;
+  }
+  .bg-row input[type="range"] {
+    width: 100%; accent-color: var(--accent); height: 4px;
+  }
+  .bg-actions {
+    display: flex; gap: 8px; justify-content: flex-end; padding-top: 4px;
+  }
+  .bg-actions button {
+    padding: 6px 16px; font-size: 13px;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--bg); color: var(--text-secondary);
+    cursor: pointer; transition: all 0.12s;
+    font-family: var(--font-sans);
+  }
+  .bg-actions button:hover { background: var(--bg-secondary); }
+  .bg-actions .btn-danger:hover { background: #fdd; border-color: #c00; color: #c00; }
+  .bg-actions .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .bg-actions .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .modal-body input[type="file"] { display: none; }
+
   @media (max-width: 768px) {
     :root { --sidebar-width: 200px; }
-    .header-path { display: none; }
-    .preview-wrap { padding: 16px 20px; }
+    .preview-wrap { padding: 16px 18px; margin: 8px; }
+    .modal-panel { width: 300px; }
   }
 </style>
 </head>
@@ -160,11 +346,6 @@
       <span class="sidebar-count" id="fileCount">0</span>
     </div>
     <div class="sidebar-list" id="sidebarList"></div>
-    <div class="sidebar-footer" id="sidebarFooter">
-      <button class="sidebar-footer-btn" id="addDocBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
-    </div>
   </aside>
 
   <main class="content">
@@ -183,8 +364,48 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- data.js 由 build.ps1 生成 -->
-<script src="data.js"></script>
+<!-- ===== 背景设置按钮（左下角，纯图标） ===== -->
+<button class="bg-toggle-btn" id="bgToggleBtn" title="背景设置">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="2" ry="2"/>
+    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/>
+    <path d="M21 15l-5-5L5 21"/>
+  </svg>
+</button>
+
+<!-- ===== 弹窗 ===== -->
+<div class="modal-overlay" id="bgModal">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <span class="modal-title">背景图片设置</span>
+      <button class="modal-close" id="bgModalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="bg-preview-box" id="bgPreviewBox">点击选择图片</div>
+      <div class="bg-row">
+        <div class="bg-label">
+          <span>模糊度</span>
+          <span class="bg-val" id="bgBlurVal">0</span>
+        </div>
+        <input type="range" id="bgBlurSlider" min="0" max="10" step="0.5" value="0">
+      </div>
+      <div class="bg-row">
+        <div class="bg-label">
+          <span>暗化</span>
+          <span class="bg-val" id="bgDarkVal">0%</span>
+        </div>
+        <input type="range" id="bgDarkSlider" min="0" max="80" step="5" value="0">
+      </div>
+      <div class="bg-actions">
+        <button id="bgSelectBtn">选择图片</button>
+        <button class="btn-danger" id="bgClearBtn">清除</button>
+        <button class="btn-primary" id="bgCloseBtn">完成</button>
+      </div>
+      <input type="file" id="bgFileInput" accept="image/*">
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   'use strict';
@@ -199,6 +420,14 @@
   let toastTimer = null;
   let sidebarVisible = true;
 
+  const MD_FILES = [
+    "1. 简介.md",
+    "2. 语法指南.md",
+    "3. 使用说明.md"
+  ];
+
+  const contentCache = {};
+
   sidebarToggle.addEventListener('click', () => {
     sidebarVisible = !sidebarVisible;
     sidebar.classList.toggle('collapsed', !sidebarVisible);
@@ -211,7 +440,29 @@
     toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2500);
   }
 
-  // ===== Render sidebar =====
+  function parseFilename(filename) {
+    var match = filename.match(/^(\d+)\.\s+(.+)\.md$/);
+    if (!match) return null;
+    return {
+      order: parseInt(match[1], 10),
+      title: match[2],
+      file: filename
+    };
+  }
+
+  function fetchContent(doc) {
+    if (contentCache[doc.file]) {
+      return Promise.resolve(contentCache[doc.file]);
+    }
+    return fetch(doc.file).then(function(resp) {
+      if (!resp.ok) throw new Error('加载失败: ' + resp.status);
+      return resp.text();
+    }).then(function(text) {
+      contentCache[doc.file] = text;
+      return text;
+    });
+  }
+
   function renderSidebar(docs) {
     sidebarList.innerHTML = '';
     if (!docs || docs.length === 0) {
@@ -221,66 +472,186 @@
       return;
     }
     fileCount.textContent = docs.length;
-    docs.forEach((doc, i) => {
-      const btn = document.createElement('button');
+    docs.forEach(function(doc, i) {
+      var btn = document.createElement('button');
       btn.className = 'sidebar-item';
       btn.textContent = doc.title;
-      btn.addEventListener('click', () => showDoc(docs, i));
+      btn.addEventListener('click', function() { showDoc(docs, i); });
       sidebarList.appendChild(btn);
     });
     showDoc(docs, 0);
   }
 
-  // ===== Show doc (no fetch!) =====
   function showDoc(docs, index) {
-    const doc = docs[index];
+    var doc = docs[index];
     if (!doc) return;
-    document.querySelectorAll('.sidebar-item').forEach((el, i) => el.classList.toggle('active', i === index));
-    renderMarkdown(doc.content);
+    document.querySelectorAll('.sidebar-item').forEach(function(el, i) {
+      el.classList.toggle('active', i === index);
+    });
+
+    preview.innerHTML = '<div class="preview-loading"><div class="spinner"></div><span>加载中…</span></div>';
+
+    fetchContent(doc).then(function(text) {
+      renderMarkdown(text);
+    }).catch(function(e) {
+      preview.innerHTML = '<div class="preview-empty"><span>加载失败: ' + e.message + '</span></div>';
+      showToast('加载失败: ' + doc.file);
+    });
     preview.scrollTop = 0;
   }
 
-  // ===== Render Markdown =====
   function renderMarkdown(text) {
     if (!text || !text.trim()) {
       preview.innerHTML = '<div class="preview-empty"><span>文件内容为空</span></div>';
       return;
     }
     try {
-      let html = typeof marked !== 'undefined'
+      var html = typeof marked !== 'undefined'
         ? marked.parse(text, { gfm: true, breaks: true })
         : '<p>' + text.replace(/\n/g, '<br>') + '</p>';
       preview.innerHTML = html;
       if (typeof hljs !== 'undefined') {
-        preview.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+        preview.querySelectorAll('pre code').forEach(function(block) { hljs.highlightElement(block); });
       }
     } catch(e) {
       preview.innerHTML = '<div class="preview-empty">渲染错误: ' + e.message + '</div>';
     }
   }
 
-  // ===== Load doc data from external data.js =====
   function loadDocs() {
-    if (typeof DOC_DATA === 'undefined' || !DOC_DATA || DOC_DATA.length === 0) {
-      renderSidebar([]);
-      return;
+    var docs = [];
+    for (var i = 0; i < MD_FILES.length; i++) {
+      var parsed = parseFilename(MD_FILES[i]);
+      if (parsed) docs.push(parsed);
     }
-    // 验证每个条目是否符合规则
-    const docs = DOC_DATA.filter(d => d.order && d.title && d.content)
-      .sort((a, b) => a.order - b.order);
+    docs.sort(function(a, b) { return a.order - b.order; });
     renderSidebar(docs);
   }
 
-  // ===== Init =====
   function waitLibs(cb, n) {
     if (n <= 0) { cb(); return; }
     if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') { cb(); return; }
-    setTimeout(() => waitLibs(cb, n - 1), 200);
+    setTimeout(function() { waitLibs(cb, n - 1); }, 200);
   }
-  waitLibs(() => {
+
+  waitLibs(function() {
     if (typeof marked !== 'undefined') marked.setOptions({ gfm: true, breaks: true });
     loadDocs();
   }, 100);
+
+})();
+
+// ===== 背景设置弹窗 =====
+(function() {
+  const modal = document.getElementById('bgModal');
+  const toggleBtn = document.getElementById('bgToggleBtn');
+  const closeBtn = document.getElementById('bgModalClose');
+  const closeBtn2 = document.getElementById('bgCloseBtn');
+  const previewBox = document.getElementById('bgPreviewBox');
+  const fileInput = document.getElementById('bgFileInput');
+  const selectBtn = document.getElementById('bgSelectBtn');
+  const clearBtn = document.getElementById('bgClearBtn');
+  const blurSlider = document.getElementById('bgBlurSlider');
+  const blurVal = document.getElementById('bgBlurVal');
+  const darkSlider = document.getElementById('bgDarkSlider');
+  const darkVal = document.getElementById('bgDarkVal');
+  const root = document.documentElement;
+
+  function openModal() { modal.classList.add('open'); }
+  function closeModal() { modal.classList.remove('open'); }
+
+  toggleBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  closeBtn2.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) closeModal();
+  });
+
+  function loadBg() {
+    const saved = localStorage.getItem('md-bg-image');
+    if (saved) {
+      root.style.setProperty('--bg-image', 'url(' + saved + ')');
+      document.body.classList.add('has-bg');
+      previewBox.style.backgroundImage = 'url(' + saved + ')';
+      previewBox.textContent = '';
+    } else {
+      document.body.classList.remove('has-bg');
+      previewBox.style.backgroundImage = 'none';
+      previewBox.textContent = '点击选择图片';
+    }
+    const savedBlur = localStorage.getItem('md-bg-blur');
+    if (savedBlur) {
+      blurSlider.value = savedBlur;
+      blurVal.textContent = savedBlur;
+      root.style.setProperty('--bg-blur', savedBlur + 'px');
+    }
+    const savedDark = localStorage.getItem('md-bg-dark');
+    if (savedDark) {
+      darkSlider.value = savedDark;
+      darkVal.textContent = savedDark + '%';
+      root.style.setProperty('--bg-dark', savedDark);
+    }
+  }
+
+  function setBg(dataUrl) {
+    localStorage.setItem('md-bg-image', dataUrl);
+    root.style.setProperty('--bg-image', 'url(' + dataUrl + ')');
+    document.body.classList.add('has-bg');
+    previewBox.style.backgroundImage = 'url(' + dataUrl + ')';
+    previewBox.textContent = '';
+  }
+
+  function clearBg() {
+    localStorage.removeItem('md-bg-image');
+    document.body.classList.remove('has-bg');
+    root.style.removeProperty('--bg-image');
+    previewBox.style.backgroundImage = 'none';
+    previewBox.textContent = '点击选择图片';
+    fileInput.value = '';
+    blurSlider.value = 0;
+    blurVal.textContent = '0';
+    darkSlider.value = 0;
+    darkVal.textContent = '0%';
+    root.style.setProperty('--bg-blur', '0px');
+    root.style.setProperty('--bg-dark', '0');
+    localStorage.removeItem('md-bg-blur');
+    localStorage.removeItem('md-bg-dark');
+  }
+
+  fileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert('图片不能超过 2MB');
+      fileInput.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      setBg(ev.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  selectBtn.addEventListener('click', function() { fileInput.click(); });
+  previewBox.addEventListener('click', function() { fileInput.click(); });
+  clearBtn.addEventListener('click', clearBg);
+
+  blurSlider.addEventListener('input', function() {
+    const v = this.value;
+    blurVal.textContent = v;
+    root.style.setProperty('--bg-blur', v + 'px');
+    localStorage.setItem('md-bg-blur', v);
+  });
+
+  darkSlider.addEventListener('input', function() {
+    const v = this.value;
+    darkVal.textContent = v + '%';
+    root.style.setProperty('--bg-dark', v);
+    localStorage.setItem('md-bg-dark', v);
+  });
+
+  loadBg();
 })();
 </script>
 </body>
