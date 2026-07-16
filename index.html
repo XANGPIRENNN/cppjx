@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markdown 查看器</title>
+<title>零基础C++教程</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -184,53 +184,7 @@
 <div class="toast" id="toast"></div>
 
 <!-- ===== 文档数据：手动添加，或由 GitHub Actions 自动注入 ===== -->
-<script class="doc-data" data-order="1" data-title="你好,C++" data-file="1. 你好,C++.md">
-## 你好,C++
-课程开始前我们要准备这些工具
-- [DevC++](https://www.ilanzou.com/s/5lDW774Z)
-- 手
-- 脑子
-- 电脑
 
-其实就这些,现在开始我们的课程吧
-
-> C++ 是一种高级语言，它是由 Bjarne Stroustrup 于 1979 年在贝尔实验室开始设计开发的。C++ 进一步扩充和完善了 C 语言，是一种面向对象的程序设计语言。C++ 可运行于多种平台上，如 Windows、MAC 操作系统以及 UNIX 的各种版本。
-
-这是C++的代码框架 背下来就对了,不写就没法运行
-``` cpp
-#include <iostream>
-using namespace std;
-int main() {
-    // 这里面写你的代码
-    return 0;
-}
-```
-看完了代码框架, 我们来学习第一个语法——cout语句
-### cout语句的使用方法
-先来看最基础的输出——字符串输出
-示例：输出Hello World！
-``` cpp
-cout << "Hello World!";
-```
-没错就这么简单
-只需要写上两个小于号里面加上双引号就可实现字符串输出
-现在来看下一个类型的cout——字符
-``` cpp
-cout << 'a';
-```
-这里你可能会问：字符是什么
-字符类型用于存储 ASCII 字符，通常占用 1 个字节。
-现在来看最后一种输出 输出一个数值
-``` cpp
-cout << 1 + 1; // 可以写一个算式
-cout << 5; // 也可以是直接的一个数字 包括小数 负数
-cout << ((2 + 3) * 678) / 3; // 复杂的算式也可以
-```
-学会了cout 请完成一下题目
-[第一课 课后题](https://oj.turingedu.cn/problem/2)
-</script>
-
-<script>
 (function() {
   'use strict';
 
@@ -304,18 +258,45 @@ cout << ((2 + 3) * 678) / 3; // 复杂的算式也可以
     }
   }
 
-  // ===== Read doc data from inline <script class="doc-data"> =====
+  // ===== Load markdown files from files.json manifest =====
   function loadDocs() {
-    const nodes = document.querySelectorAll('script.doc-data');
-    const docs = [];
-    nodes.forEach(node => {
-      const order = parseInt(node.getAttribute('data-order'), 10);
-      const title = node.getAttribute('data-title') || '';
-      const content = node.textContent || '';
-      if (title) docs.push({ order, title, content });
-    });
-    docs.sort((a, b) => a.order - b.order);
-    renderSidebar(docs);
+    fetch('files.json')
+      .then(res => {
+        if (!res.ok) throw new Error('无法加载文件列表（files.json）');
+        return res.json();
+      })
+      .then(files => {
+        if (!Array.isArray(files) || files.length === 0) {
+          renderSidebar([]);
+          return;
+        }
+        const docs = [];
+        const promises = files.map(file => {
+          // 匹配规则：数字 + ". " + 标题 + ".md"，如 "1. 你好,C++.md"
+          const match = file.match(/^(\d+)\.\s+(.+)\.md$/);
+          if (!match) return null; // 不符合规则的文件直接跳过
+          const order = parseInt(match[1], 10);
+          const title = match[2];
+          return fetch(file)
+            .then(res => {
+              if (!res.ok) return null;
+              return res.text();
+            })
+            .then(content => {
+              if (content) docs.push({ order, title, content });
+            });
+        }).filter(Boolean);
+        return Promise.all(promises).then(() => {
+          docs.sort((a, b) => a.order - b.order);
+          renderSidebar(docs);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        sidebarList.innerHTML = '<div class="sidebar-404"><div class="sidebar-404-code">404</div><div class="sidebar-404-msg">' + err.message + '</div></div>';
+        preview.innerHTML = '<div class="preview-empty"><div style="font-size:48px;font-weight:700;color:#e0e0e0;line-height:1">404</div><span>无法加载文件列表</span></div>';
+        fileCount.textContent = '0';
+      });
   }
 
   // ===== Init =====
